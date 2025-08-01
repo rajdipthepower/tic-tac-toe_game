@@ -81,8 +81,9 @@ main{
 
 }
 body{
-    background-image:url('/../Nature.jpg') ;
+    background-image:url('Nature.jpg') ;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+
 }
