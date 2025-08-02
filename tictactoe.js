@@ -1,4 +1,5 @@
-alert("This is a cursed game,play at your own risk!!");
+alert("This is a cursed game, play at your own risk!")
+
 let boxes = document.getElementsByClassName("boxes");
 
 let box0 = document.getElementById("box0");
@@ -232,21 +233,28 @@ function leftnumber(user_value,comp_value){
 }
 let isFirstComputerMove = true;
 function smartComputerMove(avail){
-    
-    // If user gave first move at center (box 4), respond with box 0 once
-    if (isFirstComputerMove && user_input.length === 1 && user_input[0] === 4) {
-        isFirstComputerMove = false;
-        return 0;
+    let c = Math.floor(Math.random()*2);
+    console.log(c);
+    if(c==0){
+        // If user gave first move at center (box 4), respond with box 0 once
+        if (isFirstComputerMove && user_input.length === 1 && user_input[0] === 4) {
+            isFirstComputerMove = false;
+            return 0;
+        }
+        else if(user_input.length === 0){
+            isFirstComputerMove = false; // Mark after first move
+            return 4;
+        }
+        else if((user_input.length != 0) && avail.includes(4)){
+            isFirstComputerMove = false; // Mark after first move
+            return 4;
+        }
     }
-    else if(user_input.length === 0){
-        isFirstComputerMove = false; // Mark after first move
-        return 4;
+    else{
+        if(avail.includes(4)){
+            return 4;
+        }
     }
-    else if((user_input.length != 0) && avail.includes(4)){
-        isFirstComputerMove = false; // Mark after first move
-        return 4;
-    }
-
     // 2. Try to win if possible
     let win = findCriticalMove(auto_generated, user_input);
     if(win !== -1){
@@ -287,4 +295,3 @@ function findCriticalMove(target, other){
     }
     return -1;
 }
-
