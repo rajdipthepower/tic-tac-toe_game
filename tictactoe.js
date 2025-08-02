@@ -156,6 +156,9 @@ function computerMove(){
     }
     if(user_input.length + auto_generated.length === 9){
         document.getElementById("para").innerHTML = "Game Over!!"; //Draw Situation
+        for(let k=0;k<9;k++){
+            document.getElementById(`box${k}`).removeEventListener("click",func);
+        }
         restart();
     }
 }
@@ -177,8 +180,14 @@ function checkWinner(){
         if(b1.innerText === b2.innerText && b2.innerText === b3.innerText && b1.innerText !== ""){
             if(b1.innerText === "X"){
                 document.getElementById("para").innerHTML = "You Win!!";
+                for(let k=0;k<9;k++){
+                    document.getElementById(`box${k}`).removeEventListener("click",func);
+                }
             } else {
                 document.getElementById("para").innerHTML = "You Lose!!";
+                for(let k=0;k<9;k++){
+                    document.getElementById(`box${k}`).removeEventListener("click",func);
+                }
             }
             restart();
             return true;
