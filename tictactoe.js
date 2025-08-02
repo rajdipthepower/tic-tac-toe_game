@@ -1,3 +1,4 @@
+alert("This is a cursed game,play at your own risk!!");
 let boxes = document.getElementsByClassName("boxes");
 
 let box0 = document.getElementById("box0");
@@ -286,3 +287,4 @@ function findCriticalMove(target, other){
     }
     return -1;
 }
+
