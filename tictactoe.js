@@ -234,7 +234,6 @@ function leftnumber(user_value,comp_value){
 let isFirstComputerMove = true;
 function smartComputerMove(avail){
     let c = Math.floor(Math.random()*2);
-    console.log(c);
     if(c==0){
         // If user gave first move at center (box 4), respond with box 0 once
         if (isFirstComputerMove && user_input.length === 1 && user_input[0] === 4) {
@@ -295,3 +294,4 @@ function findCriticalMove(target, other){
     }
     return -1;
 }
+
