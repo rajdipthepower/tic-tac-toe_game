@@ -51,7 +51,7 @@ function func(e){
         return;
     }
     if(array.length === 0){
-        document.getElementById("para").innerHTML = "Game Over!!";
+        document.getElementById("para").innerHTML = "Tie!!";
         restart();
         return;
     }
@@ -155,7 +155,7 @@ function computerMove(){
         return;
     }
     if(user_input.length + auto_generated.length === 9){
-        document.getElementById("para").innerHTML = "Game Over!!"; //Draw Situation
+        document.getElementById("para").innerHTML = "Tie!!"; //Draw Situation
         for(let k=0;k<9;k++){
             document.getElementById(`box${k}`).removeEventListener("click",func);
         }
@@ -229,21 +229,35 @@ function leftnumber(user_value,comp_value){
     }
     return arr;
 }
-
+let isFirstComputerMove = true;
 function smartComputerMove(avail){
-    if(avail.includes(4)){   //priority 1 to occupy center
+    
+    // If user gave first move at center (box 4), respond with box 0 once
+    if (isFirstComputerMove && user_input.length === 1 && user_input[0] === 4) {
+        isFirstComputerMove = false;
+        return 0;
+    }
+    else if(user_input.length === 0){
+        isFirstComputerMove = false; // Mark after first move
         return 4;
     }
+    else if((user_input.length != 0) && avail.includes(4)){
+        isFirstComputerMove = false; // Mark after first move
+        return 4;
+    }
+
     // 2. Try to win if possible
     let win = findCriticalMove(auto_generated, user_input);
     if(win !== -1){
         return win;
     }
+
     // Priority 3 to block user moves
     let block = findCriticalMove(user_input, auto_generated);
     if(block !== -1){
         return block;
     }
+
     let randomIndex = Math.floor(Math.random() * avail.length);   //usual input
     return avail[randomIndex];
 }
