@@ -13,18 +13,51 @@ let box8 = document.getElementById("box8");
 let auto_generated = [];
 let user_input = [];
 
-for(i=0;i<=8;i++){
-    boxes[i].addEventListener("click",func); //event object is automatically passed as the first parameter , no need to explicitly pass it
+let currentPlayer;
+
+let allBoxes = [box0, box1, box2, box3, box4, box5, box6, box7, box8];
+
+// Randomly choose who starts
+let randomStart = Math.floor(Math.random() * 2);
+if(randomStart === 0){
+    currentPlayer = "user";
 }
+else{
+    currentPlayer = "computer";
+}
+
+for(let i = 0; i <= 8; i++){
+    boxes[i].addEventListener("click", func);    //event object is automatically passed as the first parameter , no need to explicitly pass it
+}
+
+if(currentPlayer === "computer"){
+    setTimeout(computerMove, 300); //setTimeOut gives 300ms delay before executing computerMove
+}
+
 
 function func(e){
     let a = e.target.getAttribute("Id");
     span = document.getElementById(a);
-    span.innerHTML = `<p style = color:red;font-size:50px>X</p>`;
+    if(span.innerText !== ""){
+        return;
+    }
+    span.innerHTML = `<p style = color:red;font-size:70px>X</p>`;
+    span.removeEventListener("click", func);
     user_input.push(parseInt(a.charAt(a.length-1)));
     let array = leftnumber(user_input,auto_generated);  //storing the number of span boxes without any input
     console.log(array);
-    let computer_value = computer(array);   //storing random span box value
+    let isOver = checkWinner();
+    if(isOver){
+        return;
+    }
+    if(array.length === 0){
+        document.getElementById("para").innerHTML = "Game Over!!";
+        restart();
+        return;
+    }
+    setTimeout(computerMove, 300);
+}
+    /*let computer_value = computer(array);   //storing random span box value
     console.log(computer_value);
     auto_generated.push(computer_value);
     span1 = document.getElementById(`box${computer_value}`);
@@ -107,6 +140,51 @@ else{
         restart();
     }
 }
+}*/
+function computerMove(){
+    let array = leftnumber(user_input,auto_generated);
+    let move = smartComputerMove(array);
+    auto_generated.push(move);
+    let span = document.getElementById(`box${move}`);
+    if(span.innerText === ""){
+        span.innerHTML = `<p style = color:orange;font-size:70px>O</p>`;
+        span.removeEventListener("click", func);
+    }
+    let isOver = checkWinner();
+    if(isOver){
+        return;
+    }
+    if(user_input.length + auto_generated.length === 9){
+        document.getElementById("para").innerHTML = "Game Over!!"; //Draw Situation
+        restart();
+    }
+}
+
+function checkWinner(){
+    let combinations = [
+        [box0, box1, box2],
+        [box3, box4, box5],
+        [box6, box7, box8],
+        [box0, box3, box6],
+        [box1, box4, box7],
+        [box2, box5, box8],
+        [box0, box4, box8],
+        [box2, box4, box6]
+    ];
+
+    for(let i = 0; i < combinations.length; i++){
+        let [b1, b2, b3] = combinations[i];
+        if(b1.innerText === b2.innerText && b2.innerText === b3.innerText && b1.innerText !== ""){
+            if(b1.innerText === "X"){
+                document.getElementById("para").innerHTML = "You Win!!";
+            } else {
+                document.getElementById("para").innerHTML = "You Lose!!";
+            }
+            restart();
+            return true;
+        }
+    }
+    return false;
 }
 
 function restart(){
@@ -143,19 +221,45 @@ function leftnumber(user_value,comp_value){
     return arr;
 }
 
-function computer(ar){
-    let currentIndex  = ar.length;
-    let t;
-    
-    while(currentIndex!=0){
-        let randomIndex = Math.floor(Math.random()*currentIndex);
-        currentIndex--;
-        t = ar[randomIndex];
-        ar[randomIndex] = ar[currentIndex];
-        ar[currentIndex] = t;
+function smartComputerMove(avail){
+    if(avail.includes(4)){   //priority 1 to occupy center
+        return 4;
     }
-    console.log(ar);
-   let final_index = Math.floor( Math.random()*ar.length);
-   console.log(ar[final_index]);
-    return ar[final_index];
+    // 2. Try to win if possible
+    let win = findCriticalMove(auto_generated, user_input);
+    if(win !== -1){
+        return win;
+    }
+    // Priority 3 to block user moves
+    let block = findCriticalMove(user_input, auto_generated);
+    if(block !== -1){
+        return block;
+    }
+    let randomIndex = Math.floor(Math.random() * avail.length);   //usual input
+    return avail[randomIndex];
+}
+
+function findCriticalMove(target, other){
+    let winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],  //priority 2
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
+    for(let i = 0; i < winPatterns.length; i++){
+        let line = winPatterns[i];
+        let count = 0;
+        let empty = -1;
+        for(let j = 0; j < 3; j++){
+            if(target.includes(line[j])){
+                count++;
+            }
+            else if(!other.includes(line[j])){
+                empty = line[j];
+            }
+        }
+        if(count === 2 && empty !== -1){
+            return empty;
+        }
+    }
+    return -1;
 }
